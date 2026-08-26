@@ -34,8 +34,8 @@ public class TacoCloudClient {
    * Specify parameter as varargs argument
    */
   public Ingredient getIngredientById(String ingredientId) {
-    return rest.getForObject("http://localhost:8080/ingredients/{id}",
-                             Ingredient.class, ingredientId);
+    return rest.getForObject("http://localhost:8080/data-api/ingredients/{id}",
+            Ingredient.class, ingredientId);
   }
 
   /*
@@ -87,9 +87,9 @@ public class TacoCloudClient {
   */
 
   public List<Ingredient> getAllIngredients() {
-    return rest.exchange("http://localhost:8080/ingredients",
-            HttpMethod.GET, null, new ParameterizedTypeReference<List<Ingredient>>() {})
-        .getBody();
+    return rest.exchange("http://localhost:8080/api/ingredients",
+                    HttpMethod.GET, null, new ParameterizedTypeReference<List<Ingredient>>() {})
+            .getBody();
   }
 
   //
@@ -97,16 +97,16 @@ public class TacoCloudClient {
   //
 
   public void updateIngredient(Ingredient ingredient) {
-    rest.put("http://localhost:8080/ingredients/{id}",
-          ingredient, ingredient.getId());
+    rest.put("http://localhost:8080/data-api/ingredients/{id}",
+            ingredient, ingredient.getId());
   }
 
   //
   // POST examples
   //
   public Ingredient createIngredient(Ingredient ingredient) {
-    return rest.postForObject("http://localhost:8080/ingredients",
-        ingredient, Ingredient.class);
+    return rest.postForObject("http://localhost:8080/data-api/ingredients",
+            ingredient, Ingredient.class);
   }
 
   /*
@@ -140,8 +140,8 @@ public class TacoCloudClient {
   //
 
   public void deleteIngredient(Ingredient ingredient) {
-    rest.delete("http://localhost:8080/ingredients/{id}",
-        ingredient.getId());
+    rest.delete("http://localhost:8080/data-api/ingredients/{id}",
+            ingredient.getId());
   }
 
   //
@@ -150,12 +150,12 @@ public class TacoCloudClient {
 
   public Iterable<Ingredient> getAllIngredientsWithTraverson() {
     ParameterizedTypeReference<CollectionModel<Ingredient>> ingredientType =
-        new ParameterizedTypeReference<CollectionModel<Ingredient>>() {};
+            new ParameterizedTypeReference<CollectionModel<Ingredient>>() {};
 
     CollectionModel<Ingredient> ingredientRes =
-        traverson
-          .follow("ingredients")
-          .toObject(ingredientType);
+            traverson
+                    .follow("ingredients")
+                    .toObject(ingredientType);
 
     Collection<Ingredient> ingredients = ingredientRes.getContent();
     return ingredients;
@@ -163,24 +163,24 @@ public class TacoCloudClient {
 
   public Ingredient addIngredient(Ingredient ingredient) {
     String ingredientsUrl = traverson
-        .follow("ingredients")
-        .asLink()
-        .getHref();
+            .follow("ingredients")
+            .asLink()
+            .getHref();
 
     return rest.postForObject(ingredientsUrl,
-                              ingredient,
-                              Ingredient.class);
+            ingredient,
+            Ingredient.class);
   }
 
   public Iterable<Taco> getRecentTacosWithTraverson() {
     ParameterizedTypeReference<CollectionModel<Taco>> tacoType =
-        new ParameterizedTypeReference<CollectionModel<Taco>>() {};
+            new ParameterizedTypeReference<CollectionModel<Taco>>() {};
 
     CollectionModel<Taco> tacoRes =
-        traverson
-          .follow("tacos")
-          .follow("recents")
-          .toObject(tacoType);
+            traverson
+                    .follow("tacos")
+                    .follow("recents")
+                    .toObject(tacoType);
 
     Collection<Taco> tacos = tacoRes.getContent();
     // Alternatively, list the two paths in the same call to follow()

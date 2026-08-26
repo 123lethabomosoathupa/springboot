@@ -7,10 +7,12 @@ import lombok.AccessLevel;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import lombok.With;
 
 @Data
 @RequiredArgsConstructor
 @NoArgsConstructor(access=AccessLevel.PRIVATE, force=true)
+@With
 @Entity
 public class Ingredient {
 

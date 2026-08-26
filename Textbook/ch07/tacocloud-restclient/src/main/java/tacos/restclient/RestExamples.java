@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.client.Traverson;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import lombok.extern.slf4j.Slf4j;
@@ -88,19 +89,30 @@ public class RestExamples {
       Ingredient before = tacoCloudClient.getIngredientById("CHIX");
       log.info("BEFORE:  " + before);
       tacoCloudClient.deleteIngredient(before);
-      Ingredient after = tacoCloudClient.getIngredientById("CHIX");
+      Ingredient after = getIngredientByIdOrNull(tacoCloudClient, "CHIX");
       log.info("AFTER:  " + after);
       before = tacoCloudClient.getIngredientById("BFFJ");
       log.info("BEFORE:  " + before);
       tacoCloudClient.deleteIngredient(before);
-      after = tacoCloudClient.getIngredientById("BFFJ");
+      after = getIngredientByIdOrNull(tacoCloudClient, "BFFJ");
       log.info("AFTER:  " + after);
       before = tacoCloudClient.getIngredientById("SHMP");
       log.info("BEFORE:  " + before);
       tacoCloudClient.deleteIngredient(before);
-      after = tacoCloudClient.getIngredientById("SHMP");
+      after = getIngredientByIdOrNull(tacoCloudClient, "SHMP");
       log.info("AFTER:  " + after);
     };
+  }
+
+  // RestTemplate.getForObject() throws HttpClientErrorException.NotFound on a
+  // 404 rather than returning null, so confirming an ingredient is gone after
+  // deleteIngredient() needs this instead of a bare getIngredientById() call.
+  private Ingredient getIngredientByIdOrNull(TacoCloudClient tacoCloudClient, String id) {
+    try {
+      return tacoCloudClient.getIngredientById(id);
+    } catch (HttpClientErrorException.NotFound e) {
+      return null;
+    }
   }
 
   //
@@ -109,8 +121,13 @@ public class RestExamples {
 
   @Bean
   public Traverson traverson() {
+    // Traverson needs a root URI that itself returns a HAL document with
+    // _links to follow (rel names like "ingredients", "tacos"). /api has no
+    // root resource -- only its individual sub-paths (/api/tacos,
+    // /api/ingredients, ...) are mapped. /data-api is Spring Data REST's
+    // base path, and it auto-generates exactly this kind of root resource.
     Traverson traverson = new Traverson(
-        URI.create("http://localhost:8080/api"), MediaTypes.HAL_JSON);
+            URI.create("http://localhost:8080/data-api"), MediaTypes.HAL_JSON);
     return traverson;
   }
 
@@ -129,7 +146,7 @@ public class RestExamples {
   public CommandLineRunner traversonSaveIngredient(TacoCloudClient tacoCloudClient) {
     return args -> {
       Ingredient pico = tacoCloudClient.addIngredient(
-          new Ingredient("PICO", "Pico de Gallo", Ingredient.Type.SAUCE));
+              new Ingredient("PICO", "Pico de Gallo", Ingredient.Type.SAUCE));
       List<Ingredient> allIngredients = tacoCloudClient.getAllIngredients();
       log.info("----------------------- ALL INGREDIENTS AFTER SAVING PICO -------------------------");
       for (Ingredient ingredient : allIngredients) {
