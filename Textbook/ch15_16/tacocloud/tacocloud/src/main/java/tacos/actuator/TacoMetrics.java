@@ -1,14 +1,14 @@
 package tacos.actuator;
 
-import java.util.List;
-import org.springframework.data.rest.core.event.AbstractRepositoryEventListener;
+import org.springframework.data.mongodb.core.mapping.event.AbstractMongoEventListener;
+import org.springframework.data.mongodb.core.mapping.event.AfterSaveEvent;
 import org.springframework.stereotype.Component;
 import io.micrometer.core.instrument.MeterRegistry;
 import tacos.Ingredient;
 import tacos.Taco;
 
 @Component
-public class TacoMetrics extends AbstractRepositoryEventListener<Taco> {
+public class TacoMetrics extends AbstractMongoEventListener<Taco> {
   private MeterRegistry meterRegistry;
 
   public TacoMetrics(MeterRegistry meterRegistry) {
@@ -16,9 +16,9 @@ public class TacoMetrics extends AbstractRepositoryEventListener<Taco> {
   }
 
   @Override
-  protected void onAfterCreate(Taco taco) {
-    List<Ingredient> ingredients = taco.getIngredients();
-    for (Ingredient ingredient : ingredients) {
+  public void onAfterSave(AfterSaveEvent<Taco> event) {
+    Taco taco = event.getSource();
+    for (Ingredient ingredient : taco.getIngredients()) {
       meterRegistry.counter("tacocloud",
           "ingredient", ingredient.getId()).increment();
     }

@@ -3,6 +3,7 @@ package tacos.jmx;
 import java.util.concurrent.atomic.AtomicLong;
 import org.springframework.data.rest.core.event.AbstractRepositoryEventListener;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
+import org.springframework.jmx.export.annotation.ManagedNotification;
 import org.springframework.jmx.export.annotation.ManagedOperation;
 import org.springframework.jmx.export.annotation.ManagedResource;
 import org.springframework.stereotype.Service;
@@ -16,10 +17,11 @@ import tacos.data.TacoRepository;
 
 @Service
 @ManagedResource
+@ManagedNotification(
+    name = "taco.count",
+    description = "A notification indicating that a taco has been created",
+    notificationTypes = "taco.count")
 public class TacoCounter
-/*
-       extends AbstractRepositoryEventListener<Taco> {
-*/
        extends AbstractRepositoryEventListener<Taco>
        implements NotificationPublisherAware {
 
@@ -48,13 +50,6 @@ public class TacoCounter
   public long getTacoCount() {
     return counter.get();
   }
-
-  /*
-  @ManagedOperation
-  public long increment(long delta) {
-    return counter.addAndGet(delta);
-  }
-  */
 
   @ManagedOperation
   public long increment(long delta) {

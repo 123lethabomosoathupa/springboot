@@ -1,0 +1,26 @@
+& "C:\Windows\System32\curl.exe" -u taco-admin-client:secret `
+  -d grant_type=authorization_code `
+  -d code=03SZD1KtoZMyDxkNkPyqJNpsKnobXBPnQMhpNp3RoupD98FvH1T91Qz6raTeSrMxdSsTZqEnUO6OXX62B0_huMvYPtC5fD8_8w5_54fMy0nUtTw9rgsgNBRSOWdUcoG- `
+  -d redirect_uri=http://127.0.0.1:9090/login/oauth2/code/taco-admin-client `
+  http://localhost:9000/oauth2/token
+
+
+
+
+
+
+& "C:\Windows\System32\curl.exe" `
+  -d grant_type=authorization_code `
+  -d client_id=taco-admin-client `
+  -d client_secret=secret `
+  -d code=Doa0-dTq4v4iIi2-yXK5K4h8Nli0G8hT6mSqJrx4Ud7F57YH7lV0tztmFwg_IsuxQoUJbxAC2AWiX5BVb2ug9nDHrHLzVljB7CzgAmfBxSAstKjivOWfpqIwAlFuNC2l `
+  -d redirect_uri=http://127.0.0.1:9090/login/oauth2/code/taco-admin-client `
+  http://localhost:9000/oauth2/token
+
+
+
+
+
+
+
+http://127.0.0.1:9090/login/oauth2/code/taco-admin-client?code=Ed4aTAG5JXTt0VnwG2OnC-lie10RFQiOboXW3xLuooHzkaRkkjTO8NCUMaNCEYrq7vFnMyTNIhA9SihNHwZjOHXU_Pck2IVLINNYu3AGY3Y7VYItz3qyscrQrzR9KLkq

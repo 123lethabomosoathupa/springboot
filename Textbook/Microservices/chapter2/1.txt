@@ -1,0 +1,22 @@
+
+1
+Build the project (done)
+mvnw.cmd clean package — produced target\licensing-service-0.0.1-SNAPSHOT.jar and ran the built-in Spring context test successfully (BUILD SUCCESS).
+2
+Confirm auto-configuration on startup (done)
+java -jar target\licensing-service-0.0.1-SNAPSHOT.jar — confirmed Tomcat and the app started cleanly with zero custom config.
+3
+Hit the actuator health endpoint (done)
+GET http://localhost:8080/actuator/health returned {"status":"UP"} — confirmed via (Invoke-WebRequest ...).Content decoded with [System.Text.Encoding]::UTF8.GetString().
+4
+Test config externalization
+Stop the running app (Ctrl+C in its terminal). Restart it with a profile flag: java -jar target\licensing-service-0.0.1-SNAPSHOT.jar --spring.profiles.active=dev. Check the startup logs for a line like 'The following profiles are active: dev'. Then repeat with --spring.profiles.active=prod and confirm the log line changes accordingly — same JAR, different behavior.
+5
+Verify dependency resolution
+In a new terminal (app can keep running in the other one), from the licensing-service folder run mvnw.cmd dependency:tree. Scan the output for spring-boot-starter-web, spring-boot-starter-actuator, and lombok lines to confirm everything resolved with no conflicts. (If you have Git Bash, you can pipe to grep spring instead of scanning manually.)
+6
+Confirm self-contained port binding
+Stop the app again. Restart it with an explicit port override: java -jar target\licensing-service-0.0.1-SNAPSHOT.jar --server.port=9090. Confirm in the logs it binds to 9090 immediately with no extra server config needed, then re-test the actuator endpoint at http://localhost:9090/actuator/health to confirm it still returns {"status":"UP"} on the new port.
+7
+Check for statelessness (code review, no restart needed)
+Open LicenseServiceApplication.java (and any other classes in the project) and confirm there's no @PostConstruct loading data into memory, no static mutable fields holding request state, and no session affinity logic. For this near-empty skeleton this should already hold true — it's really just confirming there's nothing to worry about yet.
